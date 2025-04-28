@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:training/data/dataresource/auth_local_datasource.dart';
 import 'package:training/presentation/auth/blocs/login/login_bloc.dart';
 import 'package:training/presentation/home/pages/main_page.dart';
 // import 'package:training/core/extensions/build_context_ext.dart';
@@ -95,16 +96,12 @@ class _LoginPageState extends State<LoginPage> {
               BlocListener<LoginBloc, LoginState>(
                 listener: (context, state) {
                   if (state is LoginSuccess) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MainPage(),
-                      ),
-                    );
+                    AuthLocalDataSource().saveAuthData(state.authResponseModel);
+                    context.pushReplacement(const MainPage());
                   }
 
                   if (state is LoginFailure) {
-                    final errorMessage = jsonDecode(state.message) ['message'];
+                    final errorMessage = jsonDecode(state.message)['message'];
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(errorMessage),
